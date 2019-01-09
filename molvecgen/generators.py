@@ -129,6 +129,11 @@ class HetSmilesGenerator(SmilesGenerator):
         self.smilesvectorizer = smilesvectorizer
         self.smilesvectorizer_2 = smilesvectorizer_2
         
+        self.enc_dims = list(self.smilesvectorizer.dims)
+        #Subtract one from the output dims to prepare for the left shifting of output
+        self.dec_dims = list(self.smilesvectorizer.dims)
+        self.dec_dims[0] = self.dec_dims[0]-1
+        
     def next(self):
         """For python 2.x.
 
@@ -138,11 +143,6 @@ class HetSmilesGenerator(SmilesGenerator):
         # the indexing of each batch.
         with self.lock:
             index_array, current_index, current_batch_size = next(self.index_generator)
-            
-        self.enc_dims = list(self.smilesvectorizer.dims)
-        #Subtract one from the output dims to prepare for the left shifting of output
-        self.dec_dims = list(self.smilesvectorizer.dims)
-        self.dec_dims[0] = self.dec_dims[0]-1
 
         #Prepare output arrays
         batch_1D = np.zeros(tuple([current_batch_size] + self.enc_dims), dtype=self.dtype)
